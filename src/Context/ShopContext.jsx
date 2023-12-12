@@ -1,19 +1,33 @@
-import React,{createContext, useState}from "react";
+import React,{createContext, useEffect, useState}from "react";
 import all_product from '../Components/Assets/all_product'
+import { json } from "react-router-dom";
 
+
+
+export const CartFromLocalStorage = JSON.parse(localStorage.getItem('cart')); 
 
 const getDefaultCart=()=>{
     let cart={};
         for (let index=0; index<all_product.length+1;index++){
             cart[index]=0;
         } 
-        return cart;
+        return cart  
     }
 
 export const ShopContext = createContext(null);
 
-const ShopContextProvider=(props)=>{
-    const[cartItem,setCartItem]=useState(getDefaultCart());
+
+const ShopContextProvider = (props) => {
+    const [cartItem, setCartItem] = useState(() => {
+      const storedCart = JSON.parse(localStorage.getItem("cart")) || {};
+      return { ...getDefaultCart(), ...storedCart };
+    });
+     
+    useEffect(() => {
+        localStorage.setItem('cart', JSON.stringify(cartItem));
+    }, [cartItem]);
+    
+
     const addToCart = (itemID) => {
         setCartItem((prev) => {
           const updatedCart = { ...prev, [itemID]: prev[itemID] + 1 };
@@ -34,7 +48,7 @@ const ShopContextProvider=(props)=>{
                 totalAmount += itemInfo.new_price * cartItem[item];
             }
         }
-        return totalAmount;
+        return totalAmount || CartFromLocalStorage;
     }
     
     const getTotalCartItems=()=>{
@@ -45,7 +59,7 @@ const ShopContextProvider=(props)=>{
                 totalItem+= cartItem[item];
             }
         }
-      return totalItem
+        return totalItem
     }
 
     const contextValue={all_product,cartItem,addToCart,removeFromCart,getTotalCartAmount,getTotalCartItems}
