@@ -1,6 +1,5 @@
 import React,{createContext, useEffect, useState}from "react";
 import all_product from '../Components/Assets/all_product'
-import { json } from "react-router-dom";
 
 
 
@@ -48,7 +47,7 @@ const ShopContextProvider = (props) => {
                 totalAmount += itemInfo.new_price * cartItem[item];
             }
         }
-        return totalAmount || CartFromLocalStorage;
+        return totalAmount;
     }
     
     const getTotalCartItems=()=>{
